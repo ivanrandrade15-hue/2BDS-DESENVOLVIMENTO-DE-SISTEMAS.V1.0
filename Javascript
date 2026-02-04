@@ -1,0 +1,32 @@
+// Função de Login Simples
+function fazerLogin() {
+    const user = document.getElementById('user').value;
+    const pass = document.getElementById('pass').value;
+
+    // Login demonstrativo (Usuário: admin / Senha: 123)
+    if (user === "admin" && pass === "123") {
+        document.getElementById('login-container').classList.add('hidden');
+        document.getElementById('painel-container').classList.remove('hidden');
+    } else {
+        document.getElementById('erro').innerText = "Usuário ou senha incorretos!";
+    }
+}
+
+// Mural Interativo
+function adicionarIdeia() {
+    const input = document.getElementById('nova-ideia');
+    const mural = document.getElementById('mural');
+
+    if (input.value !== "") {
+        const p = document.createElement('p');
+        p.innerHTML = `⭐ ${input.value}`;
+        p.style.borderBottom = "1px solid #30363d";
+        p.style.padding = "5px 0";
+        mural.appendChild(p);
+        input.value = "";
+    }
+}
+
+function logout() {
+    location.reload(); // Recarrega a página para voltar ao login
+}
