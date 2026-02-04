@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal do Aluno - Dev Sistemas</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --dark: #1e293b;
+            --light: #f8fafc;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+        }
+
+        h2 { color: var(--dark); margin-bottom: 1.5rem; }
+
+        /* Estilo do Login */
+        .login-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        input {
+            padding: 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+        button {
+            background-color: var(--primary);
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        button:hover { background-color: #1d4ed8; }
+
+        /* Estilo do Card do Projeto */
+        .card-projeto {
+            display: none; /* Escondido até o login */
+            animation: fadeIn 0.5s ease;
+        }
+
+        .perfil-img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .btn-projeto {
+            display: inline-block;
+            margin-top: 1rem;
+            text-decoration: none;
+            color: var(--primary);
+            font-weight: bold;
+            border: 1px solid var(--primary);
+            padding: 8px 16px;
+            border-radius: 4px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- ÁREA DE LOGIN -->
+        <div id="secao-login">
+            <h2>Portal do Aluno</h2>
+            <p>Desenvolvimento de Sistemas</p>
+            <div class="login-group">
+                <input type="text" id="ra-aluno" placeholder="Digite seu RA (ex: 12345)">
+                <button onclick="autenticar()">Acessar Projetos</button>
+            </div>
+            <p id="erro" style="color: red; display: none; margin-top: 10px;">RA não encontrado!</p>
+        </div>
+
+        <!-- ÁREA DO PROJETO (REVELADA APÓS LOGIN) -->
+        <div id="area-aluno" class="card-projeto">
+            <img id="aluno-foto" class="perfil-img" src="" alt="Foto">
+            <h2 id="aluno-nome"></h2>
+            <p><strong>Projeto:</strong> <span id="projeto-titulo"></span></p>
+            <a id="projeto-link" href="#" target="_blank" class="btn-projeto">Ver no GitHub →</a>
+            <br><br>
+            <button onclick="window.location.reload()" style="background:#64748b; font-size: 0.8rem;">Sair</button>
+        </div>
+    </div>
+
+    <script>
+        async function autenticar() {
+            const raDigitado = document.getElementById('ra-aluno').value.trim();
+            const msgErro = document.getElementById('erro');
+            
+            try {
+                // Busca o JSON (Referência: https://developer.mozilla.org)
+                const resposta = await fetch('./dados.json');
+                if (!resposta.ok) throw new Error("Erro ao carregar banco de dados");
+                
+                const alunos = await resposta.json();
+
+                // Procura o aluno
+                const aluno = alunos.find(a => String(a.ra) === raDigitado);
+
+                if (aluno) {
+                    mostrarPortal(aluno);
+                } else {
+                    msgErro.style.display = 'block';
+                }
+            } catch (error) {
+                console.error("Erro:", error);
+                alert("Erro ao conectar com o servidor de dados.");
+            }
+        }
+
+        function mostrarPortal(aluno) {
+            document.getElementById('secao-login').style.display = 'none';
+            document.getElementById('area-aluno').style.display = 'block';
+
+            document.getElementById('aluno-nome').innerText = `Olá, ${aluno.nome}`;
+            document.getElementById('aluno-foto').src = aluno.foto;
+            document.getElementById('projeto-titulo').innerText = aluno.projeto;
+            document.getElementById('projeto-link').href = aluno.url;
+        }
+    </script>
+</body>
+</html>
